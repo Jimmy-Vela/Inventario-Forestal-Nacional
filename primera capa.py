@@ -1,17 +1,15 @@
 # ==========================================
 # Sistema de Inventario Forestal Nacional (IFN)
-# Capa de persistencia y consulta por ID
+# Versión final - Funcionalidad completa 
 # ==========================================
 
 import os
 
-# Nombre del archivo plano donde se guardan los datos
 ARCHIVO_DATOS = "inspecciones.txt"
 
 def cargar_inspecciones():
     """
-    Simula la capa de persistencia: carga las inspecciones 
-    desde el archivo de texto plano y retorna una lista con los registros.
+    Capa de Acceso a Datos: Carga las inspecciones desde el archivo plano.
     """
     inspecciones = []
     if os.path.exists(ARCHIVO_DATOS):
@@ -19,8 +17,6 @@ def cargar_inspecciones():
             for linea in archivo:
                 linea = linea.strip()
                 if linea:
-                    # Se asume un formato separado por comas:
-                    # id,ubicacion,brigada,num_cientificos,fustales,latizales,brinzales,nombre_muestra,uso,codigo
                     datos = linea.split(",")
                     if len(datos) == 10:
                         inspecciones.append({
@@ -37,30 +33,46 @@ def cargar_inspecciones():
                         })
     return inspecciones
 
+def guardar_inspeccion(nueva_inspeccion):
+    """
+    Capa de Acceso a Datos: Guarda una nueva inspección en el archivo plano.
+    """
+    with open(ARCHIVO_DATOS, "a", encoding="utf-8") as archivo:
+        linea = ",".join([
+            nueva_inspeccion["idConglomerado"],
+            nueva_inspeccion["ubicacion"],
+            nueva_inspeccion["nombreBrigada"],
+            nueva_inspeccion["numCientificos"],
+            nueva_inspeccion["conteoFustales"],
+            nueva_inspeccion["conteoLatizales"],
+            nueva_inspeccion["conteoBrinzales"],
+            nueva_inspeccion["nombreComunMuestra"],
+            nueva_inspeccion["usoMuestra"],
+            nueva_inspeccion["codigoIdentificacion"]
+        ])
+        archivo.write(linea + "\n")
+
 def mostrar_menu():
     print("\n--- SISTEMA INVENTARIO FORESTAL NACIONAL (IFN) ---")
-    print("1. Consultar inspección")
-    print("2. Total de inspecciones")
-    print("3. Salir")
+    print("1. Consultar inspección por ID")
+    print("2. Registrar nueva inspección")
+    print("3. Ver total de inspecciones")
+    print("4. Salir")
 
 def main():
     continuar = True
     
-    # Cargar inspecciones desde el archivo plano al iniciar
-    print("Cargando inspecciones desde el archivo de texto plano...")
+    # Carga inicial de datos
     lista_inspecciones = cargar_inspecciones()
-    total_inspecciones = len(lista_inspecciones)
-    print(f"Se cargaron {total_inspecciones} registros correctamente.")
     
     while continuar:
         mostrar_menu()
-        opcion = input("Seleccione una opción (1-3): ")
+        opcion = input("Seleccione una opción (1-4): ").strip()
         
         if opcion == "1":
-            id_buscado = input("\nIngrese el idConglomerado a consultar: ").strip()
+            id_buscado = input("\nIngrese el ID del conglomerado a consultar: ").strip()
             inspeccion_encontrada = None
             
-            # Buscar en la lista cargada (Capa de persistencia / Lógica)
             for item in lista_inspecciones:
                 if item["idConglomerado"] == id_buscado:
                     inspeccion_encontrada = item
@@ -82,11 +94,32 @@ def main():
                 print(f"Código ID       : {inspeccion_encontrada['codigoIdentificacion']}")
             else:
                 print(f"\n[Aviso] El conglomerado con ID '{id_buscado}' no existe.")
-            
+                
         elif opcion == "2":
-            print(f"\n[Estadísticas] Número total de inspecciones: {total_inspecciones}")
+            print("\n--- REGISTRO DE NUEVA INSPECCIÓN ---")
+            nueva = {
+                "idConglomerado": input("ID Conglomerado: ").strip(),
+                "ubicacion": input("Ubicación: ").strip(),
+                "nombreBrigada": input("Nombre de la Brigada: ").strip(),
+                "numCientificos": input("Número de científicos: ").strip(),
+                "conteoFustales": input("Conteo de Fustales: ").strip(),
+                "conteoLatizales": input("Conteo de Latizales: ").strip(),
+                "conteoBrinzales": input("Conteo de Brinzales: ").strip(),
+                "nombreComunMuestra": input("Nombre común de la muestra: ").strip(),
+                "usoMuestra": input("Uso (medicinal, alimenticio, maderable): ").strip(),
+                "codigoIdentificacion": input("Código de identificación de la muestra: ").strip()
+            }
+            
+            # Guardar en la lista y en el archivo plano
+            lista_inspecciones.append(nueva)
+            guardar_inspeccion(nueva)
+            print("\n[Éxito] Inspección registrada y guardada correctamente en el archivo plano.")
             
         elif opcion == "3":
+            total = len(lista_inspecciones)
+            print(f"\n[Estadísticas] Número total de inspecciones registradas: {total}")
+            
+        elif opcion == "4":
             print("\nSaliendo del sistema. ¡Hasta luego!")
             continuar = False
             
