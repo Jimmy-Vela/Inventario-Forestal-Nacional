@@ -1,0 +1,3 @@
+CONG-001,Sector La Virginia,Brigada Andina 1,4,15,35,80,Guayacán Rosado,Maderable,COL-FL-001
+CONG-002,Reserva El Candil,Brigada Forestal Sur,3,10,22,54,Cedro,Maderable,COL-FL-002
+CONG-003,Serranía de los Yariguíes, Santander,Brigada Andina 2,4,12,28,65,roble andino,Maderable,COL-FL-003
